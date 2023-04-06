@@ -19,10 +19,9 @@ DATA_PATH = os.path.join(dir_of_interest, "data")
 DATA_PATH1=os.path.join(DATA_PATH, "laptop_price.csv")
 df=pd.read_csv(DATA_PATH1)
 data=df.copy()
-data.drop('Processor Type', axis=1, inplace=True)
 
 #Accepting the required features from user
-col1, col2= st.columns(2)
+col1, col2, col3= st.columns(3)
 with col1:
     brand = st.selectbox(
         ':green[Select Laptop Brand]',
@@ -34,6 +33,12 @@ with col2:
         ':green[Select Operating System]',
         (df['Operating System'].unique()))
     st.write('Your Selected Operating System:', operating_system)
+
+with col3:
+    processor=st.selectbox(
+        ':green[Select Processor Type]',
+        (df['Processor'].unique()))
+    st.write('Your Selected Processor Type:', processor)
 
 col1, col2= st.columns(2)
 with col1:
@@ -62,7 +67,7 @@ with col2:
     st.write('Your Selected DISC Size:', disc_size)  
 
 #Create dataframe using all these values
-sample=pd.DataFrame({"Brand":[brand],"Operating System":[operating_system],
+sample=pd.DataFrame({"Brand":[brand],"Operating System":[operating_system], "Processor":[processor],
                    "RAM Type":[ram_type], "RAM Size":[ram_size],
                    "Disc Type":[disc_type], "Disc Size":[disc_size]})
 
@@ -102,6 +107,18 @@ def replace_brand(brand):
     elif brand=='ALIENWARE':
         return 16  
 data['Brand']=data['Brand'].apply(replace_brand)
+
+#Function to change processor to number
+def replace_processor(Processor):
+    if Processor=='Intel':
+        return 1
+    elif Processor=='AMD':
+        return 2
+    elif Processor=='Apple':
+        return 3
+    elif Processor=='Qualcomm':
+        return 4
+data['Processor']=data['Processor'].apply(replace_processor)
 
 #Function to change os to number
 def replace_os(os):
@@ -190,7 +207,8 @@ xgb.fit(X,y)
 
 #Convert User input to suitable integer form
 sample['Brand']=sample['Brand'].apply(replace_brand)
-sample['Operating System']=sample['Operating System'].apply(replace_os)   
+sample['Operating System']=sample['Operating System'].apply(replace_os)
+sample['Processor']=sample['Processor'].apply(replace_processor)
 sample['RAM Type']=sample['RAM Type'].apply(replace_ram_type)
 sample['RAM Size']=sample['RAM Size'].apply(replace_ram_size)
 sample['Disc Type']=sample['Disc Type'].apply(replace_disc_type)
